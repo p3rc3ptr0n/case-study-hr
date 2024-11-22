@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "case-study-hr"
+version = "1.0.0"
+description = "Q&A for a fictional HR department"
+authors = ["goeksu"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
