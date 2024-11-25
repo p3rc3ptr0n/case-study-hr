@@ -1,0 +1,1 @@
+# Functions to the index to be loaded at runtime using data from "/data" folder.
