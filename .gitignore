@@ -170,4 +170,6 @@ poetry.lock
 
 # data folder
 data/
-.vscode/settings.json
+
+# vscode folder
+.vscode/
