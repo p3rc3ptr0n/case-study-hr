@@ -1,3 +1,4 @@
+import os
 from llama_index.core.chat_engine import CondenseQuestionChatEngine
 from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.llms.llama_cpp import LlamaCPP
@@ -15,13 +16,14 @@ from interactive_rag.session_store import SQLiteChatSessionStore
 
 
 class InteractiveRAG:
-    def __init__(self, embedding_model_name: str, index_root: str, llm_name: str):
+    def __init__(self, embedding_model_name: str, data_path: str, llm_name: str):
+        self.index_root = os.path.join(data_path, "index")
         # Initialize retrieval
-        self.init_retrieval(embedding_model_name, index_root)
+        self.init_retrieval(embedding_model_name, self.index_root)
         # Initialize LLM
         self.init_llm(llm_name)
         # Init session
-        self.session_store = SQLiteChatSessionStore()
+        self.session_store = SQLiteChatSessionStore(db_path=data_path)
         self.user_session = None
 
     def init_retrieval(self, embedding_model_name: str, index_root: str):
@@ -74,6 +76,11 @@ class InteractiveRAG:
         ]
         return chat_history
 
+    def delete_session(self, user_id):
+        self.session_store.delete_session(
+            self.session_store.get_active_session_by_user(user_id)
+        )
+
     def chat(self, user_id: str, message: str):
         # Initialize query engine
         query_engine = self.index.as_query_engine(llm=self.llm)
@@ -90,5 +97,7 @@ class InteractiveRAG:
         response = chat_engine.chat(message)
         # Add message and response to session store
         self.session_store.add_message(session_id, sender="user", content=message)
-        self.session_store.add_message(session_id, sender="assistant", content=response)
+        self.session_store.add_message(
+            session_id, sender="assistant", content=response.response
+        )
         print(response)

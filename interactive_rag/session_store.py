@@ -1,13 +1,16 @@
 import sqlite3
 import uuid
 from datetime import datetime, timedelta
+import os
 
 
 class SQLiteChatSessionStore:
     """Very much naive, local chat session storage based on SQLite."""
 
-    def __init__(self, db_path="data/sessions.db", session_timeout=3600 * 24):
-        self.conn = sqlite3.connect(db_path, check_same_thread=False)
+    def __init__(self, db_path="data", session_timeout=3600 * 24):
+        self.conn = sqlite3.connect(
+            os.path.join(db_path, "sessions.db"), check_same_thread=False
+        )
         self.session_timeout = session_timeout
         self.create_tables()
 
