@@ -6,19 +6,18 @@ authors = ["goeksu"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-huggingface-hub = "^0.26.2"
-llama-index = "^0.12.1"
-llama-index-vector-stores-faiss = "^0.3.0"
-faiss-cpu = "^1.9.0.post1"
-llama-index-embeddings-huggingface = "^0.4.0"
+python = "3.11.9"
+llama-index-vector-stores-faiss = "0.3.0"
+faiss-cpu = "1.9.0.post1"
+llama-index-embeddings-huggingface = "0.4.0"
+huggingface-hub = "0.26.2"
 llama-cpp-python = "0.2.90"
-llama-index-llms-llama-cpp = "^0.3.0"
-openpyxl = "^3.1.5"
-docx2txt = "^0.8"
-python-pptx = "^1.0.2"
-python-dotenv = "^1.0.1"
-
+llama-index-llms-llama-cpp = "0.3.0"
+llama-index = "0.12.1"
+openpyxl = "3.1.5"
+docx2txt = "0.8"
+python-pptx = "1.0.2"
+python-dotenv = "1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"

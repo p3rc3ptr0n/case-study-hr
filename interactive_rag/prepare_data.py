@@ -100,13 +100,13 @@ if __name__ == "__main__":
         "--input_dir",
         type=str,
         help="Location of data to be indexed",
-        default="data/landing",
+        default="./data/landing",
     )
     parser.add_argument(
         "--persist_root",
         type=str,
         help="Saving location for index data",
-        default="data/index",
+        default="./data/index",
     )
     parser.add_argument(
         "--chunk_size",
