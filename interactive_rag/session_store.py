@@ -7,7 +7,14 @@ import os
 class SQLiteChatSessionStore:
     """Very much naive, local chat session storage based on SQLite."""
 
-    def __init__(self, db_path="data", session_timeout=3600 * 24):
+    def __init__(self, db_path: str = "data", session_timeout: int = 3600):
+        """_summary_
+
+        :param db_path: _description_, defaults to "data"
+        :type db_path: str, optional
+        :param session_timeout: _description_, defaults to 3600
+        :type session_timeout: int, optional
+        """
         self.conn = sqlite3.connect(
             os.path.join(db_path, "sessions.db"), check_same_thread=False
         )
@@ -15,7 +22,7 @@ class SQLiteChatSessionStore:
         self.create_tables()
 
     def create_tables(self):
-        # Create sessions table
+        """Creates sessions and messages tables."""
         with self.conn:
             self.conn.execute(
                 """
@@ -42,7 +49,7 @@ class SQLiteChatSessionStore:
             )
 
     # Session management methods
-    def create_session(self, user_id):
+    def create_session(self, user_id: str) -> str:
         session_id = str(uuid.uuid4())
         created_at = datetime.now()
         expires_at = created_at + timedelta(seconds=self.session_timeout)
@@ -56,7 +63,7 @@ class SQLiteChatSessionStore:
             )
         return session_id
 
-    def get_session(self, session_id):
+    def get_session(self, session_id: str):
         cursor = self.conn.execute(
             """
             SELECT session_id, user_id, created_at, expires_at
@@ -79,7 +86,7 @@ class SQLiteChatSessionStore:
             return session
         return None
 
-    def delete_session(self, session_id):
+    def delete_session(self, session_id: str):
         with self.conn:
             self.conn.execute(
                 "DELETE FROM sessions WHERE session_id = ?", (session_id,)
@@ -100,7 +107,7 @@ class SQLiteChatSessionStore:
             """
             )
 
-    def get_active_session_by_user(self, user_id):
+    def get_active_session_by_user(self, user_id: str):
         cursor = self.conn.execute(
             """
             SELECT session_id
@@ -115,7 +122,7 @@ class SQLiteChatSessionStore:
         return None  # No active session found
 
     # Message management methods
-    def add_message(self, session_id, sender, content):
+    def add_message(self, session_id: str, sender: str, content: str):
         if sender not in ["user", "assistant"]:
             raise ValueError("Sender must be 'user' or 'assistant'")
         timestamp = datetime.now()
@@ -128,7 +135,7 @@ class SQLiteChatSessionStore:
                 (session_id, sender, content, timestamp),
             )
 
-    def get_messages(self, session_id):
+    def get_messages(self, session_id: str):
         cursor = self.conn.execute(
             """
             SELECT sender, content, timestamp
@@ -143,29 +150,3 @@ class SQLiteChatSessionStore:
             for row in cursor.fetchall()
         ]
         return messages
-
-
-if __name__ == "__main__":
-    # Example usage
-    store = SQLiteChatSessionStore()
-
-    # Create a session
-    session_id = store.create_session(user_id="user123")
-    print(f"Session created: {session_id}")
-
-    # Add messages to the session
-    store.add_message(session_id, sender="user", content="Hello, assistant!")
-    store.add_message(
-        session_id, sender="assistant", content="Hi there! How can I help you?"
-    )
-    store.add_message(session_id, sender="user", content="Can you tell me a joke?")
-    store.add_message(
-        session_id,
-        sender="assistant",
-        content="Why don't scientists trust atoms? Because they make up everything!",
-    )
-
-    # Retrieve messages
-    messages = store.get_messages(session_id)
-    for msg in messages:
-        print(f"[{msg['timestamp']}] {msg['sender']}: {msg['content']}")
