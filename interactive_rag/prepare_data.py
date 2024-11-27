@@ -119,34 +119,33 @@ def read_and_index(
     # Indexing
     # Initialize embedding model
     embedding_model = get_embedding_model(model_name)
-    # Initialize a faiss vector store
-    vector_store = get_faiss_vector_store(model_name)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    index = VectorStoreIndex(
-        nodes=nodes, storage_context=storage_context, embed_model=embedding_model
-    )
+    index = VectorStoreIndex(nodes=nodes, embed_model=embedding_model)
     # Save index to disk
     persist_dir = create_persist_dir(persist_root=persist_root, model_name=model_name)
     index.storage_context.persist(persist_dir=persist_dir)
 
 
-def load_index_local(persist_dir: str = "data/index") -> VectorStoreIndex:
-    """Load a FAISS-based vector index from a local directory.
+def load_index_local(
+    embedding_model: Union[OpenAIEmbedding, HuggingFaceEmbedding],
+    persist_dir: str = "data/index",
+) -> VectorStoreIndex:
+    """Load a Simple VectorStoreIndex from local file.
 
-    Reads the FAISS index and associated metadata from the specified directory.
-
+    :param embedding_model: Initialized embedding model.
+    :type embedding_model: Union[OpenAIEmbedding, HuggingFaceEmbedding]
     :param persist_dir: Path to the directory where the index is stored, defaults to "data/index".
     :type persist_dir: str, optional
     :return: Loaded vector store index.
     :rtype: VectorStoreIndex
     """
+
+    # Rebuild storage context
+    storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
     # Load index from disk
-    vector_store = FaissVectorStore.from_persist_dir(persist_dir)
-    storage_context = StorageContext.from_defaults(
-        vector_store=vector_store, persist_dir=persist_dir
+    return load_index_from_storage(
+        storage_context=storage_context,
+        embed_model=embedding_model,
     )
-    index = load_index_from_storage(storage_context=storage_context)
-    return index
 
 
 if __name__ == "__main__":

@@ -51,7 +51,7 @@ class InteractiveRAG:
             persist_root=index_root, model_name=embedding_model_name
         )
         self.embedding_model = get_embedding_model(embedding_model_name)
-        self.index = load_index_local(persist_dir=persist_dir)
+        self.index = load_index_local(self.embedding_model, persist_dir=persist_dir)
 
     def init_llm(self, llm_name: str):
         """Initialize the large language model (LLM) for chat generation.
@@ -148,14 +148,14 @@ class InteractiveRAG:
         :type message: str
         """
         # Initialize query engine
-        query_engine = self.index.as_query_engine(llm=self.llm)
+        query_engine = self.index.as_query_engine(llm=self.llm, similarity_top_k=3)
         # Obtain session ID for user.
         session_id = self.load_or_create_session(user_id)
         # Get previous messages in user session
         chat_history = self.get_chat_history(session_id)
         # Initialize chat engine
         chat_engine = CondensePlusContextChatEngine.from_defaults(
-            query_engine=query_engine,
+            retriever=query_engine,
             chat_history=chat_history,
             verbose=True,
         )
