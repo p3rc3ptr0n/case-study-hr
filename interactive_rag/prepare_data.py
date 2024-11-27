@@ -111,7 +111,9 @@ def read_and_index(
     documents = SimpleDirectoryReader(input_dir=input_dir).load_data()
     # Split docs to nodes and create vector index
     # Just setting a sliding window chunk here, nothing fancy.
-    node_parser = SimpleNodeParser.from_defaults(chunk_size=chunk_size)
+    node_parser = SimpleNodeParser.from_defaults(
+        chunk_size=chunk_size, chunk_overlap=int(chunk_size * 0.2)
+    )
     nodes = node_parser.get_nodes_from_documents(documents=documents)
 
     # Indexing
