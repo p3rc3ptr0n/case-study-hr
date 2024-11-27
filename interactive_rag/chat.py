@@ -1,6 +1,6 @@
 import os
 from typing import List
-from llama_index.core.chat_engine import CondenseQuestionChatEngine
+from llama_index.core.chat_engine import CondensePlusContextChatEngine
 from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.llms.llama_cpp.llama_utils import (
@@ -154,7 +154,7 @@ class InteractiveRAG:
         # Get previous messages in user session
         chat_history = self.get_chat_history(session_id)
         # Initialize chat engine
-        chat_engine = CondenseQuestionChatEngine.from_defaults(
+        chat_engine = CondensePlusContextChatEngine.from_defaults(
             query_engine=query_engine,
             chat_history=chat_history,
             verbose=True,
